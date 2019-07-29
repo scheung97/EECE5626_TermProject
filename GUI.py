@@ -5,7 +5,9 @@
 
 from tkinter import *
 from tkinter import ttk
-
+import PIL
+from PIL import Image, ImageTk
+import cv2
 
 # In[2]:
 # Callback Functions
@@ -20,6 +22,18 @@ def calculate(*args):
 def run_cam(*args):
     try:
         print("open web cam here")
+        width, height = 800, 600
+        cap = cv2.VideoCapture(0)
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
+        _, frame = cap.read()
+        frame = cv2.flip(frame, 1)
+        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
+        img = PIL.Image.fromarray(cv2image)
+        imgtk = ImageTk.PhotoImage(image=img)
+        mainframe.imgtk = imgtk
+        mainframe.configure(image=imgtk)
+        mainframe.after(10, run_cam)
     except ValueError:
         pass
 
