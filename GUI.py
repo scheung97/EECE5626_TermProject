@@ -1,111 +1,113 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
 from tkinter import *
 from tkinter import ttk
 import PIL
 from PIL import Image, ImageTk
 import cv2
-
-# In[2]:
-# Callback Functions
-
-def calculate(*args):
-    try:
-        value = float(feet.get())
-        meters.set((0.3048 * value * 10000.0 + 0.5)/10000.0)
-    except ValueError:
-        pass
-
-def run_cam(*args):
-    try:
-        print("open web cam here")
-        width, height = 800, 600
-        cap = cv2.VideoCapture(0)
-        cap.set(cv2.CAP_PROP_FRAME_WIDTH, width)
-        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, height)
-        _, frame = cap.read()
-        frame = cv2.flip(frame, 1)
-        cv2image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
-        img = PIL.Image.fromarray(cv2image)
-        imgtk = ImageTk.PhotoImage(image=img)
-        mainframe.imgtk = imgtk
-        mainframe.configure(image=imgtk)
-        mainframe.after(10, run_cam)
-    except ValueError:
-        pass
-
-def cap_image(*args):
-    try:
-        print("capture image from web cam here")
-    except ValueError:
-        pass
-
-def mod_image(*args):
-    try:
-        print("modify image here")
-    except ValueError:
-        pass
-
-def save_image(*args):
-    try:
-        print("save current image here")
-    except ValueError:
-        pass
-
-# In[3]:
+import datetime
+import os, sys
 
 
-root = Tk()
-root.title("EECE5626 Image Processing & Pattern Recognition")
+class GUI():
+    def __init__(self, running=False, width=800, height=600):
+        self.running = running
+        self.width, self.height = width, height
+        self.dir_path = os.path.dirname(os.path.realpath(__file__))
+        self.cap = None
+        self.frame = None
+        self.img_cap = None
 
-mainframe = ttk.Frame(root, padding="3 3 12 12")
-mainframe.grid(column=0, row=0, sticky=(N, S, E, W))
-root.columnconfigure(0, weight=1)
-root.rowconfigure(0, weight=1)
+        self.root = Tk()
+        self.root.title("EECE5626 Image Processing & Pattern Recognition")
+
+        self.mainframe = ttk.Frame(self.root, padding="3 3 12 12")
+        self.mainframe.grid(column=0, row=0, sticky=(N, S, E, W))
+        self.root.columnconfigure(0, weight=1)
+        self.root.rowconfigure(0, weight=1)
+
+        ttk.Button(self.mainframe, text="Run", command=self.run_cam).grid(column=1, row=1, sticky=(N, W))
+        ttk.Button(self.mainframe, text="Capture", command=self.cap_image).grid(column=1, row=2, sticky=W)
+        ttk.Button(self.mainframe, text="Modify", command=self.mod_image).grid(column=1, row=5, sticky=W)
+        ttk.Button(self.mainframe, text="Save Image", command=self.save_image).grid(column=5, row=10, sticky=E)
+
+        self.img_panel = Label(self.mainframe, text="test image please ignore")
+        self.img_panel.grid(column=2, row=1, columnspan=4, rowspan=4, sticky=W+E+N+S, padx=5, pady=5)
+
+        for child in self.mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
+
+        # Keybinds:
+        #root.bind('<Return>', )
+        self.root.bind('r', self.run_cam)
+        self.root.bind('c', self.cap_image)
+        self.root.bind('m', self.mod_image)
+        self.root.bind('s', self.save_image)
+        self.root.bind('<Escape>', lambda e: self.root.quit())
 
 
-# In[4]:
+    # Callback Functions
+
+    def run_cam(self):
+        try:
+            #print("open web cam here")
+            if not self.running:
+                self.cap = cv2.VideoCapture(0)
+                self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+                self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+                self.running = True
+
+            if self.running:
+                _, self.frame = self.cap.read()
+                self.frame = cv2.flip(self.frame, 1)
+                cv2image = cv2.cvtColor(self.frame, cv2.COLOR_BGR2RGBA)
+                img = PIL.Image.fromarray(cv2image)
+                imgtk = ImageTk.PhotoImage(image=img)
+                self.img_panel.imgtk = imgtk
+                self.img_panel.configure(image=imgtk)
+                self.img_panel.after(10, self.run_cam)
+
+        except ValueError:
+            pass
+
+    def cap_image(self):
+        try:
+            print("capture image from web cam here")
+            if self.running:
+                # grab the current timestamp and use it to construct the
+                # output path
+                ts = datetime.datetime.now()
+                filename = "{}.jpg".format(ts.strftime("%Y-%m-%d_%H-%M-%S"))
+                p = os.path.sep.join((self.dir_path, filename))
+        
+                # save the file
+                img = self.frame
+                cv2.imwrite(p, img)
+                self.img_cap = img
+                print("[INFO] saved {}".format(filename))
+                
+                self.cap.release()
+                cv2.destroyAllWindows()
+                self.running = False
+                imgtk = ImageTk.PhotoImage(image=img)
+                self.img_panel.image = imgtk
+                self.img_panel.configure(image=imgtk)
+
+        except ValueError:
+            pass
+
+    def mod_image(self):
+        try:
+            print("modify image here")
+        except ValueError:
+            pass
+
+    def save_image(self):
+        try:
+            print("save current image here")
+        except ValueError:
+            pass
 
 
-feet = StringVar()
-meters = StringVar()
-
-gui = ttk.Entry(mainframe, width=50, textvariable=feet)
-gui.grid(column=2, row=1, sticky=(W, E))
-
-
-# In[5]:
-
-ttk.Button(mainframe, text="Run", command=run_cam).grid(column=1, row=1, sticky=(N, W))
-ttk.Button(mainframe, text="Capture", command=cap_image).grid(column=1, row=2, sticky=W)
-ttk.Button(mainframe, text="Modify", command=mod_image).grid(column=1, row=5, sticky=W)
-ttk.Button(mainframe, text="Save Image", command=save_image).grid(column=5, row=10, sticky=E)
-
-ttk.Label(mainframe, textvariable=meters).grid(column=3, row=2, sticky=(W, E))
-ttk.Button(mainframe, text="Calculate", command=calculate).grid(column=3, row=3, sticky=W)
-ttk.Label(mainframe, text="feet").grid(column=3, row=1, sticky=W)
-ttk.Label(mainframe, text="is equivalent to").grid(column=2, row=2, sticky=E)
-ttk.Label(mainframe, text="meters").grid(column=4, row=2, sticky=W)
-
-
-# In[6]:
-
-for child in mainframe.winfo_children(): child.grid_configure(padx=5, pady=5)
-
-# In[7]:
-# Keybinds:
-gui.focus()
-root.bind('<Return>', calculate)
-root.bind('r', run_cam)
-root.bind('c', cap_image)
-root.bind('m', mod_image)
-root.bind('s', save_image)
-root.bind('<Escape>', lambda e: root.quit())
-
-# In[8]:
-
-root.mainloop()
-
+if __name__ == "__main__":
+    GUI().root.mainloop()
