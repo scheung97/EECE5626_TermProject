@@ -70,8 +70,8 @@ for i in range(detections.shape[2]):
 """ -----"""
 
 #use bounding box dimensions for edge detection:
-for x in range(x1,x2):
-	for y in range(y1,y2): 
+for x and y in range(face_box) #range(x1,x2):
+	#for y in range(y1,y2): 
 		edges = cv2.Sobel([x,y],CV_64F,1,1,ksize = 3) 
 		return edges
 #outputing edges to see if it works:
@@ -79,7 +79,7 @@ plt.plot(edges)
 plt.title('Edges), plt.xticks([]), plt.yticks([])
 
 """ Matlab pseudo code implementation: 
-Gx=[-1 0 1; -2 0 2; -1 0 1]
+	Gx=[-1 0 1; -2 0 2; -1 0 1]
 	Gy=[-1 -2 -1; 0 0 0; 1 2 1]
 	
 	rows = size(output,1)
