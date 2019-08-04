@@ -54,7 +54,7 @@ time.sleep(10)
 
 """DNN code taken from online: """
 blob = cv2.dnn.blobFromImage(output, 1.0, (300, 300), [104, 117, 123], False, False)
- 
+
 net.setInput(blob)
 detections = net.forward()
 bboxes = []
@@ -66,22 +66,23 @@ for i in range(detections.shape[2]):
         x2 = int(detections[0, 0, i, 5] * frameWidth)
         y2 = int(detections[0, 0, i, 6] * frameHeight)
 
-		x1, y1, x2,y2 = face_box
+		#[x1, y1, x2,y2] = face_box
 """ -----"""
 
 #use bounding box dimensions for edge detection:
-for x and y in range(face_box) #range(x1,x2):
-	#for y in range(y1,y2): 
-		edges = cv2.Sobel([x,y],CV_64F,1,1,ksize = 3) 
-		return edges
+for x,y in range(face_box): #range(x1,x2):
+	#for y in range(y1,y2):
+	edges = cv2.Sobel([x,y],CV_64F,1,1,ksize = 3)
 #outputing edges to see if it works:
 plt.plot(edges)
-plt.title('Edges), plt.xticks([]), plt.yticks([])
+plt.title('Edges')
+plt.xticks([])
+plt.yticks([])
 
-""" Matlab pseudo code implementation: 
+""" Matlab pseudo code implementation:
 	Gx=[-1 0 1; -2 0 2; -1 0 1]
 	Gy=[-1 -2 -1; 0 0 0; 1 2 1]
-	
+
 	rows = size(output,1)
 	columns = size(output,2)
 	mag=zeros(output)
@@ -94,7 +95,7 @@ plt.title('Edges), plt.xticks([]), plt.yticks([])
 			mag(i+1,j+1)=sqrt(S1.^2+S2.^2)
 		end for
 	end for
-	
+
 	threshold = 70 #varies for application [0 255]
 	output_image = max(mag,threshold)
 	output_image(output_image=round(threshold))=0;
@@ -104,5 +105,3 @@ plt.title('Edges), plt.xticks([]), plt.yticks([])
 
 
 """-----"""
-
-	
