@@ -2,6 +2,19 @@
 import numpy
 import cv2
 import time
+from matplotlib import pyplot as plt #using to check edges
+
+"""DNN stuff needed and taken from online: """
+DNN = "TF"
+if DNN == "CAFFE":
+    modelFile = "res10_300x300_ssd_iter_140000_fp16.caffemodel"
+    configFile = "deploy.prototxt"
+    net = cv2.dnn.readNetFromCaffe(configFile, modelFile)
+else:
+    modelFile = "opencv_face_detector_uint8.pb"
+    configFile = "opencv_face_detector.pbtxt"
+    net = cv2.dnn.readNetFromTensorflow(modelFile, configFile)
+""" ----------------"""
 
 """opens up laptop webcam"""
 cv2.namedWindow("preview")
@@ -30,22 +43,46 @@ cv2.destroyAllWindows()
     #DLIB frontal face detector doesn't include the forehead and chin (which we want)
 
 """perform OpenCV DNN face detection: """
+"""
 time.sleep(0)
 output = cv2.imread('testoutput.jpg')
 cv2.imshow('test',output)
 gray = cv2.cvtColor(output,cv2.COLOR_BGR2GRAY) #converts rgb2gray
 cv2.imshow("gray image",gray)
 time.sleep(10)
+"""
 
-#use bounding box dimensions for edge detection
+"""DNN code taken from online: """
+blob = cv2.dnn.blobFromImage(output, 1.0, (300, 300), [104, 117, 123], False, False)
+ 
+net.setInput(blob)
+detections = net.forward()
+bboxes = []
+for i in range(detections.shape[2]):
+    confidence = detections[0, 0, i, 2]
+    if confidence > conf_threshold:
+        x1 = int(detections[0, 0, i, 3] * frameWidth)
+        y1 = int(detections[0, 0, i, 4] * frameHeight)
+        x2 = int(detections[0, 0, i, 5] * frameWidth)
+        y2 = int(detections[0, 0, i, 6] * frameHeight)
 
+		x1, y1, x2,y2 = face_box
+""" -----"""
 
+#use bounding box dimensions for edge detection:
+for x in range(x1,x2):
+	for y in range(y1,y2): 
+		edges = cv2.Sobel([x,y],CV_64F,1,1,ksize = 3) 
+		return edges
+
+#outputing edges to see if it works 
+plt.plot(edges)
+plt.title('Edges), plt.xticks([]), plt.yticks([])
 
 """-----"""
 
 """
 to do
 #Haar detection --> come up with bounding box --> use sobel detection in bounding box to map face.
-
 #facialCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 """
