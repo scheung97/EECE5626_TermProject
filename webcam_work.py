@@ -3,6 +3,7 @@ import numpy
 import cv2
 import time
 import dlib
+from PIL import IMAGE #will be used later for adding images for filter 
 from matplotlib import pyplot as plt #using to check edges
 
 """DNN stuff needed and taken from online: 
@@ -111,8 +112,12 @@ plt.title('Edges), plt.xticks([]), plt.yticks([])
 	return output_image
 """
 
+""" questions for TA + prof: 
+1) how to distinguish top of head + chin
+2) is it better to run sobel then face detection or face detect then sobel
+3) how to add image on top? ans: PIL?? img.paste
 
-
+"""
 """-----"""
 
 	
