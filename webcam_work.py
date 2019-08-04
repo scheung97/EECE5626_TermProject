@@ -74,15 +74,35 @@ for x in range(x1,x2):
 	for y in range(y1,y2): 
 		edges = cv2.Sobel([x,y],CV_64F,1,1,ksize = 3) 
 		return edges
-
-#outputing edges to see if it works 
+#outputing edges to see if it works:
 plt.plot(edges)
 plt.title('Edges), plt.xticks([]), plt.yticks([])
 
+""" Matlab pseudo code implementation: 
+Gx=[-1 0 1; -2 0 2; -1 0 1]
+	Gy=[-1 -2 -1; 0 0 0; 1 2 1]
+	
+	rows = size(output,1)
+	columns = size(output,2)
+	mag=zeros(output)
+
+	for i=x1:x2
+		for j=y1:y2
+			S1=sum(sum(Gx.*output(i:i+2,j:j+2)))
+			S2=sum(sum(Gy.*output(i:i+2,j:j+2)))
+
+			mag(i+1,j+1)=sqrt(S1.^2+S2.^2)
+		end for
+	end for
+	
+	threshold = 70 #varies for application [0 255]
+	output_image = max(mag,threshold)
+	output_image(output_image=round(threshold))=0;
+	return output_image
+"""
+
+
+
 """-----"""
 
-"""
-to do
-#Haar detection --> come up with bounding box --> use sobel detection in bounding box to map face.
-#facialCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-"""
+	
