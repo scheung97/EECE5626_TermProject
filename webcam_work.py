@@ -3,7 +3,7 @@ import numpy
 import cv2
 import time
 import dlib
-from PIL import IMAGE #will be used later for adding images for filter 
+from PIL import Image #will be used later for adding images for filter 
 from matplotlib import pyplot as plt #using to check edges
 
 """DNN stuff needed and taken from online: 
@@ -44,6 +44,20 @@ cv2.destroyAllWindows()
 #TA says to use DLIB, and show qualitative data for report
 
 #DLIB frontal face detector doesn't include the forehead and chin (which we want)
+inHeight = 300
+inWidth = 0
+frameDlibHog = frame.copy()
+frameHeight = frameDlibHog.shape[0]
+frameWidth = frameDlibHog.shape[1]
+if not inWidth:
+    inWidth = int((frameWidth / frameHeight)*inHeight)
+
+scaleHeight = frameHeight / inHeight
+scaleWidth = frameWidth / inWidth
+
+frameDlibHogSmall = cv2.resize(frameDlibHog, (inWidth, inHeight))
+
+frameDlibHogSmall = cv2.cvtColor(frameDlibHogSmall, cv2.COLOR_BGR2RGB)
 hogFaceDetector = dlib.get_frontal_face_detector()
 faceRects = hogFaceDetector(frameDlibHogSmall, 0)
 for faceRect in faceRects:
@@ -52,7 +66,9 @@ for faceRect in faceRects:
     x2 = faceRect.right()
     y2 = faceRect.bottom()
 
+face_box = []
 (x1,y1,x2,y2) = face_box
+
 """perform OpenCV DNN face detection: """
 """
 time.sleep(0)
@@ -84,10 +100,10 @@ for i in range(detections.shape[2]):
 for (x,y) in face_box: #range(x1,x2):
 	#for y in face_box: 
 		edges = cv2.Sobel([x,y],CV_64F,1,1,ksize = 3) 
-		return edges
+		#return edges
 #outputing edges to see if it works:
 plt.plot(edges)
-plt.title('Edges), plt.xticks([]), plt.yticks([])
+plt.title('Edges'), plt.xticks([]), plt.yticks([])
 
 """ Matlab pseudo code implementation: 
 	Gx=[-1 0 1; -2 0 2; -1 0 1]
