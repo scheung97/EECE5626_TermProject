@@ -84,7 +84,7 @@ for f in glob.glob(os.path.join(faces_folder_path, "*.jpg")):
     # second argument indicates that we should upsample the image 1 time. This
     # will make everything bigger and allow us to detect more faces.
     dets = detector(img, 1)
-    print("Number of faces detected: {}".format(len(dets)))
+    print("[INFO]: Number of faces detected: {}".format(len(dets)))
     for k, d in enumerate(dets):
         print("Detection {}: Left: {} Top: {} Right: {} Bottom: {}".format(
             k, d.left(), d.top(), d.right(), d.bottom()))

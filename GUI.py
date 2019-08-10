@@ -13,10 +13,13 @@ import numpy as np
 # ############################################################################
 # Filter Imports and List
 # ############################################################################
+import moustache as ms
+import beard as bd
 import gaussian as gf
 
-FILTERS = [ ('MOUSTACHE', None), \
-            ('BEARD', None), \
+
+FILTERS = [ ('MOUSTACHE', ms.moustache), \
+            ('BEARD', bd.beard), \
             ('FFT', None), \
             ('DFT', None), \
             ('GAUSSIAN NOISE', gf.gaussian), \
@@ -27,9 +30,9 @@ FILTERS = [ ('MOUSTACHE', None), \
 # GUI Class
 # ############################################################################
 class GUI():
-    def __init__(self, running=False, width=800, height=600):
-        self.running = running
-        self.width, self.height = width, height
+    def __init__(self, master):
+        self.running = False
+        self.width, self.height = 1000, 1000
         self.dir_path = os.path.dirname(os.path.realpath(__file__))
         self.cap = None
         self.frame = None
@@ -39,28 +42,27 @@ class GUI():
         ############################################################################
         # Root Window
         ############################################################################
-        self.root = Tk()
-        self.root.title("EECE5626 Image Processing & Pattern Recognition")
-
-        self.mainframe = ttk.Frame(self.root, padding="3 3 12 12")
-        self.mainframe.grid(column=0, row=0, sticky=(N, S, E, W))
-        self.root.columnconfigure(0, weight=1)
-        self.root.rowconfigure(0, weight=1)
+        mainframe = ttk.Frame(master, padding="3 3 12 12")
+        mainframe.grid(column=0, row=0, sticky=(N, S, E, W))
 
         ############################################################################
         # Buttons:
         ############################################################################
-        ttk.Button(self.mainframe, text="Run", command=self.run_cam).grid(column=0, row=1, sticky=(N, W))
-        ttk.Button(self.mainframe, text="Capture", command=self.cap_image).grid(column=0, row=2, sticky=W)
-        ttk.Button(self.mainframe, text="Modify", command=self.mod_image).grid(column=0, row=5, sticky=W)
-        ttk.Button(self.mainframe, text="Save Image", command=self.save_image).grid(column=5, row=10, sticky=E)
+        self.run_b = ttk.Button(mainframe, text="Run", command=self.run_cam)
+        self.run_b.grid(column=0, row=1, sticky=(N, W))
+        self.cap_b = ttk.Button(mainframe, text="Capture", command=self.cap_image)
+        self.cap_b.grid(column=0, row=2, sticky=W)
+        self.mod_b = ttk.Button(mainframe, text="Modify", command=self.mod_image)
+        self.mod_b.grid(column=0, row=5, sticky=W)
+        self.sav_b = ttk.Button(mainframe, text="Save Image", command=self.save_image)
+        self.sav_b.grid(column=5, row=10, sticky=E)
 
         ############################################################################
         # Listbox:
         ############################################################################
-        self.lb = Listbox(self.mainframe, height=5)
+        self.lb = Listbox(mainframe, height=5)
         self.lb.grid(column=0, row=4, sticky=W)
-        sb = ttk.Scrollbar(self.mainframe, orient=VERTICAL, command=self.lb.yview)
+        sb = ttk.Scrollbar(mainframe, orient=VERTICAL, command=self.lb.yview)
         sb.grid(column=1, row=4, sticky=W)
         self.lb['yscrollcommand'] = sb.set
 
@@ -70,28 +72,28 @@ class GUI():
         ############################################################################
         # Image Panel:
         ############################################################################
-        self.img_panel = Label(self.mainframe, text="test image please ignore")
+        self.img_panel = Label(mainframe, text="test image please ignore")
         self.img_panel.grid(column=2, row=1, columnspan=4, rowspan=4, sticky=W+E+N+S, padx=5, pady=5)
 
         ############################################################################
         # Grid Setup
         ############################################################################
-        for child in self.mainframe.winfo_children():
+        for child in mainframe.winfo_children():
             child.grid_configure(padx=5, pady=5)
         
         ############################################################################
         # Keybinds:
         ############################################################################
-        self.root.bind('r', self.run_cam)
-        self.root.bind('c', self.cap_image)
-        self.root.bind('m', self.mod_image)
-        self.root.bind('s', self.save_image)
-        self.root.bind('<Escape>', lambda e: self.root.quit())
+        master.bind('r', self.run_cam)
+        master.bind('c', self.cap_image)
+        master.bind('m', self.mod_image)
+        master.bind('s', self.save_image)
+        master.bind('<Escape>', lambda e: master.quit())
 
     ############################################################################
     # Callback Functions
     ############################################################################
-    def run_cam(self):
+    def run_cam(self, event=None):
         try:
             #print("open and run web cam here")
             if not self.running:
@@ -126,7 +128,7 @@ class GUI():
         except ValueError:
             pass
 
-    def cap_image(self):
+    def cap_image(self, event=None):
         try:
             #print("capture image from web cam here")
             if self.running:
@@ -147,7 +149,7 @@ class GUI():
         except ValueError:
             pass
 
-    def mod_image(self):
+    def mod_image(self, event=None):
         try:
             #print("modify image here")
             
@@ -156,7 +158,8 @@ class GUI():
 
             # the expectation here is that only the displayed image is supplied to 
             # the function, and that image is then overwritten by the return image
-            self.img_cap = FILTERS[idx[0]][1](self.img_cap)
+            if idx:
+                self.img_cap = FILTERS[idx[0]][1](self.img_cap)
 
             # display the updated image
             imgtk = ImageTk.PhotoImage(image=self.img_cap)
@@ -166,7 +169,7 @@ class GUI():
         except ValueError:
             pass
 
-    def save_image(self):
+    def save_image(self, event=None):
         try:
             #print("save current image here")
 
@@ -185,4 +188,7 @@ class GUI():
 
 ############################################################################
 if __name__ == "__main__":
-    GUI().root.mainloop()
+    root = Tk()
+    root.title("EECE5626 Image Processing & Pattern Recognition")
+    app = GUI(root)
+    root.mainloop()
