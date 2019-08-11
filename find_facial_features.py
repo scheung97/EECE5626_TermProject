@@ -55,11 +55,7 @@ def annotate_landmarks(im, landmarks):
     im = im.copy()
     
     #0-16: head
-    print(landmarks[0:17])
-    print(landmarks[0:17][:][1])
     A = (landmarks[0][0], landmarks[0][1])
-    max_y = max(landmarks[0:17][1])
-    print(max_y)
     cv2.circle(im, A, CIRCLE_SIZE, color=(255, 0, 0), thickness=THICKNESS_S)
     for idx, point in enumerate(landmarks[1:17]):
         B = (point[0], point[1])
