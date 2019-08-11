@@ -55,7 +55,11 @@ def annotate_landmarks(im, landmarks):
     im = im.copy()
     
     #0-16: head
-    A = (landmarks[0][0], landmarks[0][1],)
+    print(landmarks[0:17])
+    print(landmarks[0:17][:][1])
+    A = (landmarks[0][0], landmarks[0][1])
+    max_y = max(landmarks[0:17][1])
+    print(max_y)
     cv2.circle(im, A, CIRCLE_SIZE, color=(255, 0, 0), thickness=THICKNESS_S)
     for idx, point in enumerate(landmarks[1:17]):
         B = (point[0], point[1])
@@ -72,7 +76,7 @@ def annotate_landmarks(im, landmarks):
         cv2.circle(im, pos, CIRCLE_SIZE, color=(0, 255, 0), thickness=THICKNESS_S)
 
     #27-35: nose
-    A = (landmarks[27][0], landmarks[27][1],)
+    A = (landmarks[27][0], landmarks[27][1])
     cv2.circle(im, A, CIRCLE_SIZE, color=(0, 0, 255), thickness=THICKNESS_S)
     for idx, point in enumerate(landmarks[28:36]):
         B = (point[0], point[1])
@@ -89,7 +93,7 @@ def annotate_landmarks(im, landmarks):
         cv2.circle(im, pos, CIRCLE_SIZE, color=(0, 255, 255), thickness=THICKNESS_S)
 
     #48-68: lips
-    A = (landmarks[48][0], landmarks[48][1],)
+    A = (landmarks[48][0], landmarks[48][1])
     cv2.circle(im, A, CIRCLE_SIZE, color=(255, 0, 255), thickness=THICKNESS_S)
     for idx, point in enumerate(landmarks[49:68]):
         B = (point[0], point[1])
