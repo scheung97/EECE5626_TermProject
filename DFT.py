@@ -11,6 +11,11 @@ def DFT(input_img):
     im_arr = np.asarray(input_img)
     bw_img = cv2.cvtColor(im_arr, cv2.COLOR_BGR2GRAY)
 
+    pre_dft_img = 'pre-dft.jpg'
+    post_dft_img = 'post-dft.jpg'
+    post_post_img = 'post-post-dft.jpg'
+
+    cv2.imwrite(pre_dft_img,bw_img)
     """
     # do not use original image, it overwrites the image
     noise_arr = np.zeros(im_arr.shape, np.uint8)
@@ -23,11 +28,19 @@ def DFT(input_img):
     # add the noise to the original image
     img = cv2.add(im_arr, noise_arr)
     img = Image.fromarray(img)
-
     """
-    filtered_img = np.fft.fft2(bw_img)
-    filtered_img = filtered_img.astype(np.uint8)
-    #filtered_img = (255*filtered_img).astype(np.uint8)
-    img = Image.fromarray(filtered_img)
 
+    """ outputs dft image """
+    filtered_img = np.fft.fft2(bw_img)
+    filt_shift_img = np.fft.fftshift(filtered_img)
+    mag_spec = 20*np.log(np.abs(filt_shift_img))
+    mag_spec = mag_spec.astype(np.uint8)
+    cv2.imwrite(post_dft_img,mag_spec)
+    img = Image.fromarray(mag_spec)
+
+    """performs reverse fft to verify result is correct for dft transform"""
+    reverse_img_shift = np.fft.ifftshift(filt_shift_img)
+    reverse_img = np.fft.ifft2(reverse_img_shift)
+    reverse_img = np.abs(reverse_img)
+    cv2.imwrite(post_post_img, reverse_img)
     return img
