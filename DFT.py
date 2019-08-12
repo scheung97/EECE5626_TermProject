@@ -26,6 +26,7 @@ def DFT(input_img):
 
     """
     filtered_img = np.fft.fft2(im_arr)
+    #filtered_img = filtered_img.astype(np.uint8)
     filtered_img = (255*filtered_img).astype(np.uint8)
     img = Image.fromarray(filtered_img)
 

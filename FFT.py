@@ -30,6 +30,7 @@ def FFT(input_img):
     # and adds the generated noise back to image
 
     filtered_img = np.fft.rfft2(im_arr)
+    #filtered_img = filtered_img.astype(np.uint8)
     filtered_img = (255*filtered_img).astype(np.uint8)
     img = Image.fromarray(filtered_img)
     return img
