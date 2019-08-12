@@ -16,12 +16,13 @@ import numpy as np
 import moustache as ms
 import beard as bd
 import gaussian as gf
-
+import DFT as dft
+import FFT as fft
 
 FILTERS = [ ('MOUSTACHE', ms.moustache), \
             ('BEARD', bd.beard), \
-            ('FFT', None), \
-            ('DFT', None), \
+            ('FFT', fft.FFT), \
+            ('DFT', dft.DFT), \
             ('GAUSSIAN NOISE', gf.gaussian), \
             ('RANDOM', None), \
             ]
@@ -54,6 +55,8 @@ class GUI():
         self.cap_b.grid(column=0, row=2, sticky=W)
         self.mod_b = ttk.Button(mainframe, text="Modify", command=self.mod_image)
         self.mod_b.grid(column=0, row=5, sticky=W)
+        """self.clr_b = ttk.Button(mainframe, text="Clear Filters", command=self.clear_filters)
+        self.clr_b.grid(column=0, row = 6, sticky=W) """
         self.sav_b = ttk.Button(mainframe, text="Save Image", command=self.save_image)
         self.sav_b.grid(column=5, row=10, sticky=E)
 
@@ -80,13 +83,14 @@ class GUI():
         ############################################################################
         for child in mainframe.winfo_children():
             child.grid_configure(padx=5, pady=5)
-        
+
         ############################################################################
         # Keybinds:
         ############################################################################
         master.bind('r', self.run_cam)
         master.bind('c', self.cap_image)
         master.bind('m', self.mod_image)
+        #master.bind('d', self.clear_filters)
         master.bind('s', self.save_image)
         master.bind('<Escape>', lambda e: master.quit())
 
@@ -139,7 +143,7 @@ class GUI():
                 ts = datetime.datetime.now()
                 filename = "{}.jpg".format(ts.strftime("%Y-%m-%d_%H-%M-%S"))
                 img_pth = os.path.sep.join((self.dir_path, filename))
-        
+
                 # save the file
                 img = self.frame
                 cv2.imwrite(img_pth, img)
@@ -152,15 +156,16 @@ class GUI():
     def mod_image(self, event=None):
         try:
             #print("modify image here")
-            
+
             # get the current selection in the list box
             idx = self.lb.curselection()
 
-            # the expectation here is that only the displayed image is supplied to 
+            # the expectation here is that only the displayed image is supplied to
             # the function, and that image is then overwritten by the return image
             if idx and self.capture:
+                orig_image = self.img_cap
                 self.img_cap = FILTERS[idx[0]][1](self.img_cap)
-                
+
                 # display the updated image
                 imgtk = ImageTk.PhotoImage(image=self.img_cap)
                 self.img_panel.configure(image=imgtk)
@@ -168,7 +173,13 @@ class GUI():
 
         except ValueError:
             pass
-
+            """
+    def clear_filters(self, event=None):
+        try:
+            self.img_cap = orig_image
+        except ValueError:
+            pass
+            """
     def save_image(self, event=None):
         try:
             #print("save current image here")
@@ -177,7 +188,7 @@ class GUI():
             ts = datetime.datetime.now()
             filename = "{}_USER_SAVE.jpg".format(ts.strftime("%Y-%m-%d_%H-%M-%S"))
             img_pth = os.path.sep.join((self.dir_path, filename))
-    
+
             # save the file
             img = cv2.cvtColor(np.asarray(self.img_cap), cv2.COLOR_RGBA2BGRA)
             cv2.imwrite(img_pth, img)

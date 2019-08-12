@@ -6,7 +6,7 @@ from PIL import Image
 import numpy as np
 
 def FFT(input_img):
-    print("[INFO]: Adding Gaussian Noise to input image")
+    print("[INFO]: Performing 2-D RFFT to input image")
 
     # convert image to ndarray
     im_arr = np.asarray(input_img)
@@ -29,11 +29,7 @@ def FFT(input_img):
     # inherently it use np.random.normal() to create normal distribution
     # and adds the generated noise back to image
 
-    numpy.fft.rfft2(a)
-    noise_img = random_noise(im_arr, mode='gaussian', var=0.1**2)
-    noise_img = (255*noise_img).astype(np.uint8)
-
-    img = Image.fromarray(noise_img)
-    #"""
-
+    filtered_img = np.fft.rfft2(im_arr)
+    filtered_img = (255*filtered_img).astype(np.uint8)
+    img = Image.fromarray(filtered_img)
     return img
