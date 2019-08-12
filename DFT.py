@@ -7,9 +7,9 @@ import numpy as np
 
 def DFT(input_img):
     print("[INFO]: Performing 2-D DFT to input image")
-
     # convert image to ndarray
     im_arr = np.asarray(input_img)
+    bw_img = cv2.cvtColor(im_arr, cv2.COLOR_BGR2GRAY)
 
     """
     # do not use original image, it overwrites the image
@@ -25,9 +25,9 @@ def DFT(input_img):
     img = Image.fromarray(img)
 
     """
-    filtered_img = np.fft.fft2(im_arr)
-    #filtered_img = filtered_img.astype(np.uint8)
-    filtered_img = (255*filtered_img).astype(np.uint8)
+    filtered_img = np.fft.fft2(bw_img)
+    filtered_img = filtered_img.astype(np.uint8)
+    #filtered_img = (255*filtered_img).astype(np.uint8)
     img = Image.fromarray(filtered_img)
 
     return img
