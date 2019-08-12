@@ -48,6 +48,7 @@ def beard(input_img):
     # and save the original image size (used later when re-sizing the image)
     imgBeard = imgBeard[:, :, 0:3]
     origBeardHeight, origBeardWidth = imgBeard.shape[:2]
+    #print("Orig. Beard H, W: {}, {}".format(origBeardHeight, origBeardWidth))
 
     ##########################################################################
     #img = input_img.copy()
@@ -88,16 +89,19 @@ def beard(input_img):
             # Un-comment the next line for debug (draw box around the nose)
             nose_box = cv2.rectangle(roi_color, (nx, ny), (nx+nw, ny+nh), (255, 0, 0), 2)
  
-            # The beard should be three times the width of the nose
-            beardWidth =  4 * nw
-            beardHeight = beardWidth * origBeardHeight / origBeardWidth
+            # The beard should be four/five times the width of the nose
+            beardWidth =  5 * nw
+            beardHeight = beardWidth * 1.5 #((beardWidth/1) * (origBeardHeight/2)) / origBeardWidth
+            #print("Scaled Beard H, W: {}, {}".format(beardHeight, beardWidth))
  
-            # Center the beard on the bottom of the nose
+            # Center the beard on the bottom of the nose 
+            # Top Left
             x1 = int( nx - (beardWidth/4) )
+            y1 = int( ny + nh - (beardHeight/10) )
+            # Bottom Right
             x2 = int( nx + nw + (beardWidth/4) )
-            y1 = int( ny + nh - (beardHeight/2) )
-            y2 = int( 2*ny + nh + (beardHeight/2) )
-            print("({}, {}), ({}, {})".format(x1,y1,x2,y2))
+            y2 = int( ny + nh + (beardHeight/2) )
+            #print("({}, {}), ({}, {})".format(x1,y1,x1+x2,y1+y2))
  
             # Check for clipping
             if x1 < 0:
@@ -108,11 +112,12 @@ def beard(input_img):
                 x2 = w
             if y2 > h:
                 y2 = h
-            print("After clipping: ({}, {}), ({}, {})".format(x1,y1,x2,y2))
+            #print("After clipping: ({}, {}), ({}, {})".format(x1,y1,x1+x2,y1+y2))
  
             # Re-calculate the width and height of the beard image
             beardWidth = int( x2 - x1 )
             beardHeight = int( y2 - y1 )
+            #print("Final scaled Beard H, W: {}, {}".format(beardHeight, beardWidth))
  
             # Re-size the original image and the masks to the beard sizes
             # calculated above
@@ -140,7 +145,7 @@ def beard(input_img):
             # place the joined image, saved to dst back over the original image
             roi_color[y1:y2, x1:x2] = dst
 
-            # make sure we only draw one beard, even if there are multiple "noses"
+            # make sure we only draw one beard per face, even if there are multiple "noses"
             break
 
     print("[INFO]: Beard added to image")

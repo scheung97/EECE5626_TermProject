@@ -72,7 +72,7 @@ def moustache(input_img):
         print("        Detection {}: X: {} Y: {} W: {} H: {}".format(
             len(faces), x, y, w, h))
         # Un-comment the next line for debug (draw box around all faces)
-        #face = cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        face_box = cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
  
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = frame[y:y+h, x:x+w]
@@ -85,7 +85,7 @@ def moustache(input_img):
             print("        Detection {}: Nose X: {} Nose Y: {} Nose W: {} Nose H: {}".format(
                 len(nose), nx, ny, nw, nh))
             # Un-comment the next line for debug (draw box around the nose)
-            #cv2.rectangle(roi_color, (nx, ny), (nx+nw, ny+nh), (255, 0, 0), 2)
+            nose_box = cv2.rectangle(roi_color, (nx, ny), (nx+nw, ny+nh), (255, 0, 0), 2)
  
             # The mustache should be three times the width of the nose
             mustacheWidth =  3 * nw
@@ -94,7 +94,7 @@ def moustache(input_img):
             # Center the mustache on the bottom of the nose
             x1 = int( nx - (mustacheWidth/4) )
             x2 = int( nx + nw + (mustacheWidth/4) )
-            y1 = int( ny + nh - (mustacheHeight/2) )
+            y1 = int( ny + nh - (mustacheHeight/3) )
             y2 = int( ny + nh + (mustacheHeight/2) )
  
             # Check for clipping
