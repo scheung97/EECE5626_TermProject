@@ -74,7 +74,7 @@ def beard(input_img):
             len(faces), x, y, w, h))
         h = 2*h
         # Un-comment the next line for debug (draw box around all faces)
-        face_box = cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        #face_box = cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
  
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = frame[y:y+h, x:x+w]
@@ -87,12 +87,12 @@ def beard(input_img):
             print("        Detection {}: Nose X: {} Nose Y: {} Nose W: {} Nose H: {}".format(
                 len(nose), nx, ny, nw, nh))
             # Un-comment the next line for debug (draw box around the nose)
-            nose_box = cv2.rectangle(roi_color, (nx, ny), (nx+nw, ny+nh), (255, 0, 0), 2)
+            #nose_box = cv2.rectangle(roi_color, (nx, ny), (nx+nw, ny+nh), (255, 0, 0), 2)
  
             # The beard should be four/five times the width of the nose
             beardWidth =  5 * nw
             beardHeight = beardWidth * 1.5 #((beardWidth/1) * (origBeardHeight/2)) / origBeardWidth
-            #print("Scaled Beard H, W: {}, {}".format(beardHeight, beardWidth))
+            print("        Scaled Beard H, W: {}, {}".format(beardHeight, beardWidth))
  
             # Center the beard on the bottom of the nose 
             # Top Left
@@ -101,7 +101,7 @@ def beard(input_img):
             # Bottom Right
             x2 = int( nx + nw + (beardWidth/4) )
             y2 = int( ny + nh + (beardHeight/2) )
-            #print("({}, {}), ({}, {})".format(x1,y1,x1+x2,y1+y2))
+            print("        Beard bounds: ({}, {}), ({}, {})".format(x1,y1,x1+x2,y1+y2))
  
             # Check for clipping
             if x1 < 0:
@@ -112,12 +112,12 @@ def beard(input_img):
                 x2 = w
             if y2 > h:
                 y2 = h
-            #print("After clipping: ({}, {}), ({}, {})".format(x1,y1,x1+x2,y1+y2))
+            print("        After clipping: ({}, {}), ({}, {})".format(x1,y1,x1+x2,y1+y2))
  
             # Re-calculate the width and height of the beard image
             beardWidth = int( x2 - x1 )
             beardHeight = int( y2 - y1 )
-            #print("Final scaled Beard H, W: {}, {}".format(beardHeight, beardWidth))
+            print("        Final scaled Beard H, W: {}, {}".format(beardHeight, beardWidth))
  
             # Re-size the original image and the masks to the beard sizes
             # calculated above
@@ -132,7 +132,11 @@ def beard(input_img):
  
             # roi_bg contains the original image only where the beard is not
             # in the region that is the size of the beard.
-            roi_bg = cv2.bitwise_and(roi, roi, mask = mask_inv)
+            try:
+                roi_bg = cv2.bitwise_and(roi, roi, mask = mask_inv)
+            except:
+                print("[ERROR]: Region of Interest or mask mis-match")
+                return None
  
             # roi_fg contains the image of the beard only where the beard is
             roi_fg = cv2.bitwise_and(beard, beard, mask = mask)

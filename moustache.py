@@ -72,7 +72,7 @@ def moustache(input_img):
         print("        Detection {}: X: {} Y: {} W: {} H: {}".format(
             len(faces), x, y, w, h))
         # Un-comment the next line for debug (draw box around all faces)
-        face_box = cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        #face_box = cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
  
         roi_gray = gray[y:y+h, x:x+w]
         roi_color = frame[y:y+h, x:x+w]
@@ -85,7 +85,7 @@ def moustache(input_img):
             print("        Detection {}: Nose X: {} Nose Y: {} Nose W: {} Nose H: {}".format(
                 len(nose), nx, ny, nw, nh))
             # Un-comment the next line for debug (draw box around the nose)
-            nose_box = cv2.rectangle(roi_color, (nx, ny), (nx+nw, ny+nh), (255, 0, 0), 2)
+            #nose_box = cv2.rectangle(roi_color, (nx, ny), (nx+nw, ny+nh), (255, 0, 0), 2)
  
             # The mustache should be three times the width of the nose
             mustacheWidth =  3 * nw
