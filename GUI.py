@@ -158,13 +158,13 @@ class GUI():
 
             # the expectation here is that only the displayed image is supplied to 
             # the function, and that image is then overwritten by the return image
-            if idx:
+            if idx and self.capture:
                 self.img_cap = FILTERS[idx[0]][1](self.img_cap)
-
-            # display the updated image
-            imgtk = ImageTk.PhotoImage(image=self.img_cap)
-            self.img_panel.configure(image=imgtk)
-            self.img_panel.image = imgtk
+                
+                # display the updated image
+                imgtk = ImageTk.PhotoImage(image=self.img_cap)
+                self.img_panel.configure(image=imgtk)
+                self.img_panel.image = imgtk
 
         except ValueError:
             pass
